@@ -6,7 +6,8 @@
 
 ### Crate 职责与依赖方向
 
-- `app/`：可运行程序入口、应用业务、窗口和 UI 装配、运行配置与应用专属 Asset。不得作为下层库 crate 的依赖。
+- `app/`：可运行程序入口、应用业务、窗口和 UI 装配及运行配置，不得作为下层库 crate 的依赖。
+- `crates/assets/`：统一管理应用 Asset，可供其他 Crate 使用。
 - `crates/test_utils/`：跨 Crate 共享的测试及 Benchmark 基础设施，不能进入应用或其他生产代码的正常依赖路径。
 - `crates/` 中将来增加的内部 Library：按实际可交付能力划分。
 
@@ -43,7 +44,7 @@ Workspace 内部 Crate 默认使用 Path Dependency 并遵守必要的职责与�
 
 ## Assets
 
-应用专属 Asset 统一通过 `app/src/assets.rs` 与 `app/src/assets/` 管理，`AppAssetPlugin` 负责应用需要的注册。
+应用 Asset 统一由 `crates/assets/` 管理，资源文件位于 `crates/assets/src/assets/`，`crates/assets/src/lib.rs` 公开 `AppAssetPlugin` 负责应用需要的注册。
 
 其他代码通过语义名称引用应用 Asset，不到处散布物理/Embedded 路径；Asset 的注册和路径选择集中在实际的 Asset Owner 中。
 

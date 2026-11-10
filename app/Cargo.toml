@@ -6,6 +6,7 @@ edition.workspace = true
 
 [dependencies]
 bevy.workspace = true
+bevy_app_assets = { path = "../crates/assets" }
 bevy_widgetry.workspace = true
 bevy_brp_runtime.workspace = true
 serde.workspace = true

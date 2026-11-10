@@ -1,14 +1,18 @@
 [workspace]
 resolver = "3"
-members = ["app", "crates/test_utils"]
+members = ["app", "crates/assets", "crates/test_utils"]
 
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
 
 [workspace.dependencies]
-bevy_widgetry = { git = "https://github.com/slc90/bevy_widgetry", default-features = false, features = ["window", "app_logging", "ui_scale"] }
-bevy_brp_runtime = { git = "https://github.com/slc90/bevy_brp", tag = "0.4.2" }
+bevy_widgetry = { git = "https://github.com/slc90/bevy_widgetry", default-features = false, features = [
+  "window",
+  "app_logging",
+  "ui_scale",
+] }
+bevy_brp_runtime = { git = "https://github.com/slc90/bevy_brp" }
 serde = { version = "1.0", features = ["derive"] }
 ron = "0.12.2"
 tempfile = "3.27.0"
@@ -19,7 +23,7 @@ sha2 = "0.10.9"
 wmi = "0.18.4"
 
 [workspace.dependencies.bevy]
-version = "=0.20.0"
+version = "*"
 default-features = false
 features = [
   "std",
@@ -71,7 +75,5 @@ opt-level = 3
 [profile.release]
 debug = "line-tables-only"
 
-# 配合 BRP 使用的 MCP
-# cargo install bevy_brp_mcp --git https://github.com/slc90/bevy_brp --tag 0.4.2 --locked
-[workspace.metadata.tools]
-bevy_brp_mcp = "0.4.2"
+# 安装 BRP MCP（使用 Git 默认分支）
+# cargo install bevy_brp_mcp --git https://github.com/slc90/bevy_brp --locked

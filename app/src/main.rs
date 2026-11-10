@@ -3,24 +3,23 @@
 #[cfg(not(all(target_os = "windows", target_pointer_width = "64")))]
 compile_error!("This application template supports Windows x64 only");
 
-mod assets;
 mod config;
 mod diagnostics;
 
-use assets::AppAssetPlugin;
 use bevy::log::LogPlugin;
 use bevy::window::{MonitorSelection, PrimaryWindow, WindowPosition, WindowResolution};
 use bevy::winit::WinitSettings;
 use bevy::{prelude::*, render::RenderPlugin, tasks::block_on};
+use bevy_app_assets::AppAssetPlugin;
 use bevy_brp_runtime::BrpRuntimePlugin;
 use bevy_widgetry::app_logging::{AppLogging, LoggingGuard, log_plugin};
 use bevy_widgetry::scene::WidgetrySceneCommandsExt;
 use bevy_widgetry::ui_scale::{WidgetryUiScale, WidgetryUiScalePlugin};
-use tracing::debug;
 use bevy_widgetry::window::{
     WidgetryWindowBackground, WidgetryWindowControlsConfig, WidgetryWindowPlugin,
     prepare_native_window, transparent_render_creation, widgetry_window,
 };
+use tracing::debug;
 
 fn main() -> std::process::ExitCode {
     let mut logging_ready = false;
@@ -90,17 +89,14 @@ fn run(logging_ready: &mut bool, guard: &mut Option<LoggingGuard>) -> Result<App
 
 fn initial_window() -> Window {
     prepare_native_window(Window {
-        title: "app".into(),
+        title: "{{project-name}}".into(),
         resolution: WindowResolution::new(1920, 1080),
         position: WindowPosition::Centered(MonitorSelection::Primary),
         ..default()
     })
 }
 
-fn setup(
-    mut commands: Commands,
-    primary_window: Query<Entity, With<PrimaryWindow>>,
-) -> Result {
+fn setup(mut commands: Commands, primary_window: Query<Entity, With<PrimaryWindow>>) -> Result {
     let target = primary_window.single().map_err(diagnostics::operation)?;
     let camera = commands.spawn(Camera2d).id();
     commands.spawn_scene_with_error_handler(bsn! {

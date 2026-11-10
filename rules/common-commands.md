@@ -75,10 +75,8 @@ cargo test -p <package-name>
 **运行生成的 GUI 应用**
 
 ```powershell
-cargo run -p <app-package-name>
+cargo run -p {{project-name}}
 ```
-
-这里的 `<app-package-name>` 是生成后 `app/Cargo.toml` 的真实 Cargo Package 名称。
 
 ## 使用原则
 

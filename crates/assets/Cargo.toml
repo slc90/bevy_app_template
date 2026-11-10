@@ -1,0 +1,11 @@
+[package]
+name = "bevy_app_assets"
+publish = false
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+bevy.workspace = true
+
+[lints]
+workspace = true
