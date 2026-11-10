@@ -1,0 +1,4 @@
+[template]
+include = ["app/Cargo.toml", "app/src/main.rs", "rules/common-commands.md"]
+
+ignore = ["cargo-generate.toml"]
