@@ -1,0 +1,13 @@
+disallowed-macros = [
+  { path = "tracing::trace", reason = "TRACE 仅用于临时诊断，提交前移除调用", allow-invalid = true },
+  { path = "bevy::log::trace", reason = "TRACE 仅用于临时诊断，提交前移除调用", allow-invalid = true },
+  { path = "std::assert", reason = "生产代码应显式处理可恢复错误，不以断言代替错误处理" },
+  { path = "std::assert_eq", reason = "生产代码应显式处理可恢复错误，不以断言代替错误处理" },
+  { path = "std::assert_ne", reason = "生产代码应显式处理可恢复错误，不以断言代替错误处理" },
+  { path = "std::debug_assert", reason = "生产代码应显式处理可恢复错误，不以断言代替错误处理" },
+  { path = "std::debug_assert_eq", reason = "生产代码应显式处理可恢复错误，不以断言代替错误处理" },
+  { path = "std::debug_assert_ne", reason = "生产代码应显式处理可恢复错误，不以断言代替错误处理" },
+]
+allow-unwrap-in-tests = true
+allow-expect-in-tests = true
+allow-panic-in-tests = true

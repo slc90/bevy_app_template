@@ -1,0 +1,15 @@
+[package]
+name = "bevy_app_test_utils"
+publish = false
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+bevy.workspace = true
+criterion.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+wmi.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,77 @@
+[workspace]
+resolver = "3"
+members = ["app", "crates/test_utils"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+
+[workspace.dependencies]
+bevy_widgetry = { git = "https://github.com/slc90/bevy_widgetry", default-features = false, features = ["window", "app_logging", "ui_scale"] }
+bevy_brp_runtime = { git = "https://github.com/slc90/bevy_brp", tag = "0.4.2" }
+serde = { version = "1.0", features = ["derive"] }
+ron = "0.12.2"
+tempfile = "3.27.0"
+tracing = "0.1.44"
+criterion = { version = "0.8.2", features = ["html_reports"] }
+serde_json = "1.0"
+sha2 = "0.10.9"
+wmi = "0.18.4"
+
+[workspace.dependencies.bevy]
+version = "=0.20.0"
+default-features = false
+features = [
+  "std",
+  "async_executor",
+  "multi_threaded",
+  "bevy_asset",
+  "bevy_log",
+  "reflect_auto_register",
+  "bevy_scene",
+  "bevy_window",
+  "bevy_winit",
+  "bevy_render",
+  "bevy_core_pipeline",
+  "bevy_ui",
+  "bevy_ui_render",
+  "bevy_ui_widgets",
+  "bevy_input_focus",
+  "ui_picking",
+  "png",
+  "complex_script_segmentation",
+  "system_clipboard",
+]
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+warnings = "deny"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+unreachable = "deny"
+dbg_macro = "deny"
+let_underscore_must_use = "deny"
+disallowed_macros = "deny"
+type_complexity = "allow"
+too_many_arguments = "allow"
+
+[profile.dev]
+debug = "line-tables-only"
+opt-level = 1
+
+[profile.dev.package."*"]
+debug = 0
+opt-level = 3
+
+[profile.release]
+debug = "line-tables-only"
+
+# 配合 BRP 使用的 MCP
+# cargo install bevy_brp_mcp --git https://github.com/slc90/bevy_brp --tag 0.4.2 --locked
+[workspace.metadata.tools]
+bevy_brp_mcp = "0.4.2"
