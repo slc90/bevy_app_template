@@ -1,4 +1,7 @@
-use bevy::input::{ButtonState, keyboard::{Key, KeyboardInput, NativeKey}};
+use bevy::input::{
+    ButtonState,
+    keyboard::{Key, KeyboardInput, NativeKey},
+};
 use bevy::input_focus::InputFocusPlugin;
 use bevy::prelude::*;
 use bevy::window::Ime;
@@ -14,7 +17,6 @@ pub fn scene_app() -> App {
         InputFocusPlugin,
         bevy::text::TextPlugin,
     ));
-    app.set_default_font(bevy::text::FontSource::monospace());
     app.init_asset::<Image>();
     app.init_asset::<Mesh>();
     app.init_asset::<bevy::mesh::skinning::SkinnedMeshInverseBindposes>();
@@ -104,7 +106,9 @@ pub fn advance_until(
     let mut frames = 0;
     while !ready(app.world()) {
         if start.elapsed() >= timeout {
-            return Err(format!("Timed out waiting for {description} after {frames} frames"));
+            return Err(format!(
+                "Timed out waiting for {description} after {frames} frames"
+            ));
         }
         app.update();
         frames += 1;

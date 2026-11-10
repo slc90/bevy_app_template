@@ -23,23 +23,28 @@ impl BenchmarkArtifacts {
             .duration_since(UNIX_EPOCH)
             .map_err(io::Error::other)?
             .as_millis();
-        let directory = workspace.join("target/benchmark").join(format!(
-            "{owner}-{time}-{}",
-            std::process::id()
-        ));
+        let directory = workspace
+            .join("target/benchmark")
+            .join(format!("{owner}-{time}-{}", std::process::id()));
         fs::create_dir_all(&directory)?;
-        let artifacts = Self { workspace, directory };
-        artifacts.write_json("environment.json", &json!({
-            "measured_at_unix_ms": time,
-            "profile": profile,
-            "os": std::env::consts::OS,
-            "arch": std::env::consts::ARCH,
-            "commit": command(&workspace, "git", &["rev-parse", "HEAD"]),
-            "working_tree": command(&workspace, "git", &["status", "--porcelain"]),
-            "rust": command(&workspace, "rustc", &["-Vv"]),
-            "hardware": hardware(),
-            "rustflags": std::env::var("RUSTFLAGS").ok(),
-        }))?;
+        let artifacts = Self {
+            workspace,
+            directory,
+        };
+        artifacts.write_json(
+            "environment.json",
+            &json!({
+                "measured_at_unix_ms": time,
+                "profile": profile,
+                "os": std::env::consts::OS,
+                "arch": std::env::consts::ARCH,
+                "commit": command(&artifacts.workspace, "git", &["rev-parse", "HEAD"]),
+                "working_tree": command(&artifacts.workspace, "git", &["status", "--porcelain"]),
+                "rust": command(&artifacts.workspace, "rustc", &["-Vv"]),
+                "hardware": hardware(),
+                "rustflags": std::env::var("RUSTFLAGS").ok(),
+            }),
+        )?;
         Ok(artifacts)
     }
 
@@ -57,7 +62,9 @@ impl BenchmarkArtifacts {
         let mut buffer = [0u8; HASH_BUFFER_BYTES];
         loop {
             let count = file.read(&mut buffer)?;
-            if count == 0 { break; }
+            if count == 0 {
+                break;
+            }
             digest.update(&buffer[..count]);
         }
         Ok(format!("{:x}", digest.finalize()))
@@ -66,13 +73,17 @@ impl BenchmarkArtifacts {
 
 fn safe_name(name: &str) -> io::Result<&str> {
     if !name.is_empty()
-        && name.bytes().all(|byte| byte.is_ascii_alphanumeric()
-            || matches!(byte, b'-' | b'_' | b'.'))
+        && name
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.'))
         && !matches!(name, "." | "..")
     {
         Ok(name)
     } else {
-        Err(io::Error::new(io::ErrorKind::InvalidInput, "Invalid artifact name"))
+        Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "Invalid artifact name",
+        ))
     }
 }
 
@@ -92,14 +103,24 @@ fn hardware() -> Value {
     };
     let mut result = serde_json::Map::new();
     for (name, query) in [
-        ("cpu", "SELECT Name,NumberOfCores,NumberOfLogicalProcessors FROM Win32_Processor"),
-        ("gpu", "SELECT Name,DriverVersion FROM Win32_VideoController"),
-        ("os", "SELECT Caption,Version,BuildNumber FROM Win32_OperatingSystem"),
+        (
+            "cpu",
+            "SELECT Name,NumberOfCores,NumberOfLogicalProcessors FROM Win32_Processor",
+        ),
+        (
+            "gpu",
+            "SELECT Name,DriverVersion FROM Win32_VideoController",
+        ),
+        (
+            "os",
+            "SELECT Caption,Version,BuildNumber FROM Win32_OperatingSystem",
+        ),
     ] {
-        let output: Value = match connection.raw_query::<std::collections::HashMap<String, Value>>(query) {
-            Ok(values) => json!(values),
-            Err(error) => json!({"query_error": error.to_string()}),
-        };
+        let output: Value =
+            match connection.raw_query::<std::collections::HashMap<String, Value>>(query) {
+                Ok(values) => json!(values),
+                Err(error) => json!({"query_error": error.to_string()}),
+            };
         result.insert(name.into(), output);
     }
     Value::Object(result)

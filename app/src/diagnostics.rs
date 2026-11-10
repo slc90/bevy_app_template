@@ -1,8 +1,8 @@
 use bevy::ecs::error::{ErrorContext, Severity};
 use bevy::prelude::*;
 use bevy_widgetry::diagnostics::{ErrorFrame, WidgetryFailure};
-use tracing::{debug, error, info, warn};
 use std::{error::Error, fmt};
+use tracing::{debug, error, info, warn};
 
 type Source = Box<dyn Error + Send + Sync>;
 type AppFailure = WidgetryFailure<AppError>;
@@ -30,7 +30,10 @@ impl Error for AppError {
 
 #[track_caller]
 fn failure(source: impl Into<Source>) -> AppFailure {
-    WidgetryFailure::new(AppError::Operation(source.into()), ErrorFrame::new("app.operation"))
+    WidgetryFailure::new(
+        AppError::Operation(source.into()),
+        ErrorFrame::new("app.operation"),
+    )
 }
 
 #[track_caller]

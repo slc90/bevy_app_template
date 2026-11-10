@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
-use tracing::warn;
 use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 use std::path::PathBuf;
+use tracing::warn;
 
 const DEFAULT_SCALE_FACTOR: f32 = 1.25;
 const ALLOWED_SCALE_FACTORS: [f32; 4] = [1.0, 1.25, 1.5, 2.0];
@@ -32,7 +32,10 @@ impl Default for AppConfig {
 impl AppConfig {
     fn validate(&self) -> io::Result<()> {
         if !ALLOWED_SCALE_FACTORS.contains(&self.scale_factor) {
-            return Err(io::Error::new(io::ErrorKind::InvalidData, "scale_factor 必须为 1.0、1.25、1.5 或 2.0"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "scale_factor 必须为 1.0、1.25、1.5 或 2.0",
+            ));
         }
         if !BRP_PORT_RANGE.contains(&self.brp_port) || self.brp_port == RENDER_WORLD_BRP_PORT {
             return Err(io::Error::new(
@@ -70,9 +73,10 @@ pub(crate) struct ConfigFile {
 
 impl ConfigFile {
     fn create_directory(&self) -> io::Result<()> {
-        let parent = self.path.parent().ok_or_else(|| {
-            io::Error::new(io::ErrorKind::InvalidInput, "配置文件缺少父目录")
-        })?;
+        let parent = self
+            .path
+            .parent()
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "配置文件缺少父目录"))?;
         fs::create_dir_all(parent)
     }
 
@@ -144,7 +148,12 @@ mod tests {
         let path = root.path().join("nested").join("config.ron");
         let config = load(path.clone()).config;
         assert_eq!(config.brp_port, DEFAULT_BRP_PORT);
-        assert_eq!(ron::from_str::<AppConfig>(&fs::read_to_string(path).unwrap()).unwrap().brp_port, DEFAULT_BRP_PORT);
+        assert_eq!(
+            ron::from_str::<AppConfig>(&fs::read_to_string(path).unwrap())
+                .unwrap()
+                .brp_port,
+            DEFAULT_BRP_PORT
+        );
     }
 
     #[test]
