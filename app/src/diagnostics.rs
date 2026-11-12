@@ -1,5 +1,6 @@
 use bevy::ecs::error::{ErrorContext, Severity};
 use bevy::prelude::*;
+use bevy_widgetry::app_logging::safe_diagnostic;
 use bevy_widgetry::diagnostics::{ErrorFrame, WidgetryFailure};
 use std::{error::Error, fmt};
 use tracing::{debug, error, info, warn};
@@ -45,16 +46,16 @@ pub(crate) fn handler(error: BevyError, context: ErrorContext) {
     match error.severity() {
         Severity::Ignore => {}
         Severity::Trace | Severity::Debug => {
-            debug!(error = %error, details = ?error, ecs_context = ?context, "ECS 操作未能完成")
+            debug!(error = %safe_diagnostic(&error), details = %safe_diagnostic(format_args!("{error:?}")), ecs_context = ?context, "ECS 操作未能完成")
         }
         Severity::Info => {
-            info!(error = %error, details = ?error, ecs_context = ?context, "ECS 操作未能完成")
+            info!(error = %safe_diagnostic(&error), details = %safe_diagnostic(format_args!("{error:?}")), ecs_context = ?context, "ECS 操作未能完成")
         }
         Severity::Warning => {
-            warn!(error = %error, details = ?error, ecs_context = ?context, "ECS 操作未能完成")
+            warn!(error = %safe_diagnostic(&error), details = %safe_diagnostic(format_args!("{error:?}")), ecs_context = ?context, "ECS 操作未能完成")
         }
         Severity::Error => {
-            error!(error = %error, details = ?error, ecs_context = ?context, "ECS 操作失败")
+            error!(error = %safe_diagnostic(&error), details = %safe_diagnostic(format_args!("{error:?}")), ecs_context = ?context, "ECS 操作失败")
         }
         Severity::Panic => bevy::ecs::error::panic(error, context),
     }
@@ -62,12 +63,18 @@ pub(crate) fn handler(error: BevyError, context: ErrorContext) {
 
 pub(crate) fn startup(error: BevyError, logging_ready: bool) {
     if logging_ready {
-        error!(error = %error, details = ?error, "应用启动失败");
+        error!(error = %safe_diagnostic(&error), details = %safe_diagnostic(format_args!("{error:?}")), "应用启动失败");
     } else {
-        eprintln!("应用启动失败：{error:?}");
+        eprintln!(
+            "应用启动失败：{}",
+            safe_diagnostic(format_args!("{error:?}"))
+        );
     }
 }
 
 pub(crate) fn logging_shutdown(failure: &bevy_widgetry::app_logging::LoggingFailure) {
-    eprintln!("日志收尾失败：{failure:?}");
+    eprintln!(
+        "日志收尾失败：{}",
+        safe_diagnostic(format_args!("{failure:?}"))
+    );
 }
